@@ -59,12 +59,17 @@ class ReplaceWithVar extends ResolvedCorrectionProducer {
       var initializer = variables[0].initializer;
       String? insertionText;
       int? insertionOffset;
-      if (initializer != null && isDotShorthand(initializer)) {
+      // A cascade expression passes the context type on to its target, so that
+      // is where a dot shorthand needs the type to be written.
+      var initializerTarget = initializer is CascadeExpression
+          ? initializer.target
+          : initializer;
+      if (initializerTarget != null && isDotShorthand(initializerTarget)) {
         // Inserts the type before the dot shorthand (e.g. `E.a` where type is
         // `E`) because we erase the required context type when we replace the
         // declared type with `var`.
         insertionText = utils.getNodeText(type);
-        insertionOffset = initializer.beginToken.offset;
+        insertionOffset = initializerTarget.beginToken.offset;
       } else if (type is NamedType) {
         var typeArguments = type.typeArguments;
         if (typeArguments != null) {
