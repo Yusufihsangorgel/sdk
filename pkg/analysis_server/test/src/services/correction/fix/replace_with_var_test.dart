@@ -481,6 +481,16 @@ Set f() {
     await assertNoFix();
   }
 
+  Future<void> test_generic_setLiteral_ambiguous_cascade() async {
+    await resolveTestCode('''
+Set f() {
+  Set s = {}..addAll([]);
+  return s;
+}
+''');
+    await assertNoFix();
+  }
+
   Future<void> test_generic_setLiteral_cascade() async {
     await resolveTestCode('''
 Set f() {

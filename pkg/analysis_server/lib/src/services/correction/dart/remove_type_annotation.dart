@@ -98,24 +98,21 @@ class RemoveTypeAnnotation extends ParsedCorrectionProducer {
 
     String? insertionText;
     int? insertionOffset;
-    // A cascade expression passes the context type on to its target, so that
-    // is where a dot shorthand needs the type to be written.
-    var initializerTarget = initializer is CascadeExpression
-        ? initializer.target
-        : initializer;
-    if (isDotShorthand(initializerTarget)) {
+    // The context type of a cascade expression is passed on to its target, so
+    // the target is the expression that depends on the declared type.
+    if (initializer is CascadeExpression) {
+      initializer = initializer.target;
+    }
+    if (isDotShorthand(initializer)) {
       // Inserts the type before the dot shorthand (e.g. `E.a` where type is
       // `E`) because we erase the required context type when we replace the
       // declared type with `var`.
       // TODO(kallentu): https://github.com/dart-lang/sdk/issues/61164
       insertionText = utils.getNodeText(type);
-      insertionOffset = initializerTarget.beginToken.offset;
+      insertionOffset = initializer.beginToken.offset;
     } else if (type is NamedType) {
       var typeArguments = type.typeArguments;
       if (typeArguments != null) {
-        if (initializer is CascadeExpression) {
-          initializer = initializer.target;
-        }
         if (initializer is TypedLiteral) {
           if (initializer.typeArguments == null) {
             insertionText = utils.getNodeText(typeArguments);

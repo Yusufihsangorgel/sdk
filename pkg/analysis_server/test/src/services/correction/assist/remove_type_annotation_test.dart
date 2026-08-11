@@ -248,6 +248,16 @@ Set f() {
     await assertNoAssist();
   }
 
+  Future<void> test_generic_setLiteral_ambiguous_cascade() async {
+    await resolveTestCode('''
+Set f() {
+  ^Set s = {}..addAll([]);
+  return s;
+}
+''');
+    await assertNoAssist();
+  }
+
   Future<void> test_generic_setLiteral_cascade() async {
     await resolveTestCode('''
 Set<String> ^s = {}..addAll([]);
