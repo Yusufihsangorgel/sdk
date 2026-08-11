@@ -182,6 +182,23 @@ Set f() {
 ''');
   }
 
+  Future<void> test_generic_instanceCreation_dotShorthand_cascade() async {
+    await resolveTestCode('''
+C<int> f() {
+  ^C<int> c = .new()..toString();
+  return c;
+}
+class C<T> {}
+''');
+    await assertHasAssist('''
+C<int> f() {
+  var c = C<int>.new()..toString();
+  return c;
+}
+class C<T> {}
+''');
+  }
+
   Future<void> test_generic_instanceCreation_withArguments() async {
     await resolveTestCode('''
 C<int> f() {
