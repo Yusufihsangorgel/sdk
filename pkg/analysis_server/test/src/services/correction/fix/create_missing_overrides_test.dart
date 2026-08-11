@@ -1189,4 +1189,92 @@ class B extends A {
 }
 ''');
   }
+
+  Future<void> test_method_indirectSuperclass_noMostSpecificSignature() async {
+    await resolveTestCode('''
+import 'package:meta/meta.dart';
+
+class A {
+  @mustBeOverridden
+  void m() {}
+}
+
+abstract class B {
+  void m({int? b});
+}
+
+abstract class C {
+  void m({int? c});
+}
+
+class D extends A implements B, C {}
+''');
+    await assertHasFix(
+      '''
+import 'package:meta/meta.dart';
+
+class A {
+  @mustBeOverridden
+  void m() {}
+}
+
+abstract class B {
+  void m({int? b});
+}
+
+abstract class C {
+  void m({int? c});
+}
+
+class D extends A implements B, C {
+  @override
+  void m() {
+    // TODO: implement m
+  }
+}
+''',
+      filter: (error) {
+        return error.diagnosticCode ==
+            diag.missingOverrideOfMustBeOverriddenOne;
+      },
+    );
+  }
+
+  Future<void> test_method_indirectSuperclass_widenedSignature() async {
+    await resolveTestCode('''
+import 'package:meta/meta.dart';
+
+class A {
+  @mustBeOverridden
+  void m() {}
+}
+
+class B extends A {
+  @override
+  void m({int? value}) {}
+}
+
+class C extends B {}
+''');
+    await assertHasFix('''
+import 'package:meta/meta.dart';
+
+class A {
+  @mustBeOverridden
+  void m() {}
+}
+
+class B extends A {
+  @override
+  void m({int? value}) {}
+}
+
+class C extends B {
+  @override
+  void m({int? value}) {
+    // TODO: implement m
+  }
+}
+''');
+  }
 }

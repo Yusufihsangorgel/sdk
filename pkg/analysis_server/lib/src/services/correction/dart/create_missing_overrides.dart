@@ -43,7 +43,7 @@ class CreateMissingOverrides extends ResolvedCorrectionProducer {
     }
     var signatures = [
       ...InheritanceOverrideVerifier.missingOverrides(targetDeclaration),
-      ...InheritanceOverrideVerifier.missingMustBeOverridden(targetDeclaration),
+      ..._mustBeOverriddenSignatures(targetDeclaration),
     ];
     // Sort by name, getters before setters.
     signatures.sort((ExecutableElement a, ExecutableElement b) {
@@ -115,5 +115,36 @@ class CreateMissingOverrides extends ResolvedCorrectionProducer {
         }
       });
     });
+  }
+
+  /// Returns the signatures to write for the members annotated with
+  /// `@mustBeOverridden` that [targetDeclaration] doesn't override.
+  ///
+  /// The verifier reports the annotated declaration, which can sit above the
+  /// member that is actually inherited. Writing the annotated signature is
+  /// wrong whenever a class in between changed it, so prefer the inherited
+  /// signature, and keep the annotated one when there is no most specific
+  /// signature to inherit.
+  List<ExecutableElement> _mustBeOverriddenSignatures(
+    CompilationUnitMember targetDeclaration,
+  ) {
+    var annotated = InheritanceOverrideVerifier.missingMustBeOverridden(
+      targetDeclaration,
+    );
+    var targetElement = switch (targetDeclaration) {
+      ClassDeclaration() => targetDeclaration.declaredFragment?.element,
+      EnumDeclaration() => targetDeclaration.declaredFragment?.element,
+      _ => null,
+    };
+    if (targetElement == null) {
+      return annotated;
+    }
+    return [
+      for (var element in annotated)
+        switch (Name.forElement(element)) {
+          var name? => targetElement.getInheritedMember(name) ?? element,
+          _ => element,
+        },
+    ];
   }
 }
