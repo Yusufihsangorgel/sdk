@@ -12441,6 +12441,14 @@ LinterLintCode:
       The analyzer produces this diagnostic when the declaration of part of the
       public API of a package doesn't have a documentation comment.
 
+      This lint checks libraries under the `lib` directory of a package that has
+      a `pubspec.yaml`, including `lib/src`, whether or not they are exported.
+      It skips names that start with `_`, `@internal` declarations and their
+      members, overriding members, `main`, enum constructors, constructors of
+      sealed, abstract final, and abstract interface classes, and setters unless
+      their getter is also undocumented. `@visibleForTesting` doesn't exempt a
+      declaration.
+
       #### Example
 
       The following code produces this diagnostic because the class `C` doesn't
