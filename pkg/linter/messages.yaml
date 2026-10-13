@@ -12446,10 +12446,14 @@ LinterLintCode:
       report the following declarations:
 
       - Private declarations (names that start with `_`) and their members.
-      - Declarations annotated with `@internal`, and their members.
+      - Unnamed extensions and their members.
+      - Top-level declarations annotated with `@internal`, and their members.
       - Overriding members, `main`, and enum constructors.
       - Constructors of sealed, abstract final, and abstract interface classes.
       - Setters, unless their getter is also undocumented.
+
+      It also reports the declaring parameters of a class's primary constructor
+      when they don't have a documentation comment.
 
       Annotating a declaration with `@visibleForTesting` doesn't exempt it.
 
