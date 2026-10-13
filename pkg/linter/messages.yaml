@@ -12441,9 +12441,9 @@ LinterLintCode:
       The analyzer produces this diagnostic when the declaration of part of the
       public API of a package doesn't have a documentation comment.
 
-      This lint rule checks libraries under the `lib` directory of a package
-      that has a `pubspec.yaml`, including libraries in `lib/src`. It doesn't
-      report the following declarations:
+      This lint rule checks libraries under the `lib` directory of a package,
+      including libraries in `lib/src`. It doesn't report the following
+      declarations:
 
       - Private declarations (names that start with `_`) and their members.
       - Unnamed extensions and their members.
